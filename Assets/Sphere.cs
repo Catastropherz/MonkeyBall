@@ -18,6 +18,14 @@ public class NewBehaviourScript : MonoBehaviour
     private float maxVerticalAngle = 20.0f;
     private float maxHorizontalAngle = 15.0f;
 
+    private Vector3 respawnPosition;
+
+    void Start()
+    { 
+        // Save respawn position
+        respawnPosition = transform.position;
+    }
+    
     // Movement function
     void MoveSphere()
     {
@@ -31,6 +39,7 @@ public class NewBehaviourScript : MonoBehaviour
 
     }
 
+    // Camera function based on input
     void MoveCamera()
     {
         // set input values
@@ -53,7 +62,7 @@ public class NewBehaviourScript : MonoBehaviour
         MoveCamera();
     }
 
-    // Collide with Goal object
+    // Collide with object
     private void OnTriggerEnter(Collider other)
     {
         // Check if collided with Goal
@@ -62,5 +71,16 @@ public class NewBehaviourScript : MonoBehaviour
             // Victory
             GameManager.instance.Victory();
         }
+        // Check if collided with Respawn plane
+        else if (other.gameObject.CompareTag("Respawn"))
+        {
+            // print debug message
+            Debug.Log("Respawning...");
+            // Respawn
+            transform.position = respawnPosition;
+            sphere.velocity = Vector3.zero;
+            sphere.angularVelocity = Vector3.zero;
+        }
     }
+
 }

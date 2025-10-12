@@ -39,4 +39,34 @@ public class MainMenu : MonoBehaviour
     {
         GameManager.instance.BackToMainMenu();
     }
+
+    //Select level 1
+    public void SelectLevel1()
+    {
+        GameManager.instance.LoadLevel(1);
+    }
+
+    //Select level 2
+    public void SelectLevel2()
+    {
+        GameManager.instance.LoadLevel(2);
+    }
+
+    //Select level 3
+    public void SelectLevel3()
+    {
+        GameManager.instance.LoadLevel(3);
+    }
+
+    //Select level 4
+    public void SelectLevel4()
+    {
+        GameManager.instance.LoadLevel(4);
+    }
+
+    //Select Level 5
+    public void SelectLevel5()
+    {
+        GameManager.instance.LoadLevel(5);
+    }
 }

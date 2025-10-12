@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -22,6 +23,8 @@ public class GameManager : MonoBehaviour
     // Panel references
     private GameObject pausePanel;
     private GameObject victoryPanel;
+    private GameObject timer;
+    private GameObject victoryTimer;
 
     //-----------------------------------------------------
     // Unity Methods
@@ -53,6 +56,12 @@ public class GameManager : MonoBehaviour
             case "SampleScene":
                 currentLevel = 1;
                 break;
+            case "Level2":
+                currentLevel = 2;
+                break;
+            case "Level3":
+                currentLevel = 3;
+                break;
             default:
                 currentLevel = 0;
                 break;
@@ -66,8 +75,17 @@ public class GameManager : MonoBehaviour
         {
             // Keep track of time
             levelTime += Time.deltaTime;
+
+            // Update timer UI
+            if (timer != null)
+            {
+                int minutes = Mathf.FloorToInt(levelTime / 60F);
+                int seconds = Mathf.FloorToInt(levelTime - minutes * 60);
+                int milliseconds = Mathf.FloorToInt((levelTime * 100) % 100);
+                timer.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+            }
         }
-        
+
     }
 
     // Load level function
@@ -90,6 +108,11 @@ public class GameManager : MonoBehaviour
                 break;
             case 2:
                 Debug.Log("Loading Level 2");
+                SceneManager.LoadSceneAsync("Level2");
+                break;
+            case 3:
+                Debug.Log("Loading Level 3");
+                SceneManager.LoadSceneAsync("Level3");
                 break;
             default:
                 Debug.Log("Loading Level " + levelIndex);
@@ -116,8 +139,10 @@ public class GameManager : MonoBehaviour
         // references to UI objects in the newly loaded scene
         pausePanel = GameObject.FindWithTag("PausePanel");
         victoryPanel = GameObject.FindWithTag("VictoryPanel");
+        timer = GameObject.FindWithTag("Timer");
+        victoryTimer = GameObject.FindWithTag("VictoryTimer");
 
-        if (pausePanel == null || victoryPanel == null)
+        if (pausePanel == null || victoryPanel == null || timer == null || victoryTimer == null)
         {
             // Only show an error if we are in a game scene where these panels are expected
             if (scene.name != "MainMenu")
@@ -130,6 +155,7 @@ public class GameManager : MonoBehaviour
             // Ensure panels start in the correct state
             pausePanel.SetActive(false);
             victoryPanel.SetActive(false);
+            timer.SetActive(true);
             isPaused = false;
         }
     }
@@ -164,9 +190,18 @@ public class GameManager : MonoBehaviour
         
         // Show victory screen
         victoryPanel.SetActive(true);
+        timer.SetActive(false); // Hide timer
         isPaused = true;
         isVictory = true;
-        Time.timeScale = 0; // Resume game time
+        Time.timeScale = 0; // Pause game time
+        // Update victory timer UI
+        if (victoryTimer != null)
+        {
+            int minutes = Mathf.FloorToInt(levelTime / 60F);
+            int seconds = Mathf.FloorToInt(levelTime - minutes * 60);
+            int milliseconds = Mathf.FloorToInt((levelTime * 100) % 100);
+            victoryTimer.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+        }
     }
 
     // Load next level

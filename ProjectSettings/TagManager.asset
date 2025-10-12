@@ -6,6 +6,8 @@ TagManager:
   tags:
   - PausePanel
   - VictoryPanel
+  - Timer
+  - VictoryTimer
   layers:
   - Default
   - TransparentFX
