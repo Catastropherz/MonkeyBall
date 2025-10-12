@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-803129089488952317
+--- !u!114 &-6522217842265200978
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 0
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -20,14 +20,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Environment
-  m_Shader: {fileID: -6465566751694194690, guid: 9d047946bbcd9504bb03b7cfd3026908,
+  m_Name: Shader Graphs_Ball
+  m_Shader: {fileID: -6465566751694194690, guid: 4c00616019d4178489ecc5c583b61c49,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -37,18 +37,30 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Triplanar_59cc7d493207460ebff7e09af1ef1e33_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 47d29d469997a18469f2a2e222f77f0b, type: 3}
+    - _Normals:
+        m_Texture: {fileID: 2800000, guid: c2c9ef303c3f93f4b8f2dc8928704721, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Triplanar_735c2b69741443c7a34bf21b9e70aa3a_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 4b864b2b9ad0b5b429d5026d0b2feb29, type: 3}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BUILTIN_QueueControl: 0
-    - _BUILTIN_QueueOffset: 0
-    - _Tiling: 0.2
-    m_Colors: []
+    - _Metallic: 0.7
+    - _NormalStrength: 0.8
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _Smoothness: 0.7
+    - _Transparency: 0.2
+    m_Colors:
+    - _Color: {r: 0.8443397, g: 0.68867916, b: 1, a: 0}
   m_BuildTextureStacks: []
