@@ -8,6 +8,8 @@ TagManager:
   - VictoryPanel
   - Timer
   - VictoryTimer
+  - VictoryText
+  - BestTime1
   layers:
   - Default
   - TransparentFX

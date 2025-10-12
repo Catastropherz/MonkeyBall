@@ -4,6 +4,17 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// Save best times for each level
+public static class SaveData
+{ 
+    public const string Prefix = "HighScore_Level_";
+    public const string Level1Time = Prefix + "1";
+    public const string Level2Time = Prefix + "2";
+    public const string Level3Time = Prefix + "3";
+    public const string Level4Time = Prefix + "4";
+    public const string Level5Time = Prefix + "5";
+}
+
 public class GameManager : MonoBehaviour
 {
     // Singleton instance
@@ -12,11 +23,11 @@ public class GameManager : MonoBehaviour
     // Variables
     private int currentLevel = 0;
     private float levelTime = 0.0f;
-    private float levelScore1 = 0.0f;
-    private float levelScore2 = 0.0f;
-    private float levelScore3 = 0.0f;
-    private float levelScore4 = 0.0f;
-    private float levelScore5 = 0.0f;
+    private float levelScore1 = float.MaxValue;
+    private float levelScore2 = float.MaxValue;
+    private float levelScore3 = float.MaxValue;
+    private float levelScore4 = float.MaxValue;
+    private float levelScore5 = float.MaxValue;
     private bool isPaused = false;
     private bool isVictory = false;
 
@@ -25,6 +36,13 @@ public class GameManager : MonoBehaviour
     private GameObject victoryPanel;
     private GameObject timer;
     private GameObject victoryTimer;
+    private GameObject victoryText;
+    private GameObject bestTime1;
+    private GameObject bestTime2;
+    private GameObject bestTime3;
+    private GameObject bestTime4;
+    private GameObject bestTime5;
+    private GameObject LevelSelector;
 
     //-----------------------------------------------------
     // Unity Methods
@@ -45,10 +63,14 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
 
         // Load save data
-        // TODO: Implement save/load system for high score
+        levelScore1 = PlayerPrefs.GetFloat(SaveData.Level1Time, float.MaxValue);
+        levelScore2 = PlayerPrefs.GetFloat(SaveData.Level2Time, float.MaxValue);
+        levelScore3 = PlayerPrefs.GetFloat(SaveData.Level3Time, float.MaxValue);
+        levelScore4 = PlayerPrefs.GetFloat(SaveData.Level4Time, float.MaxValue);
+        levelScore5 = PlayerPrefs.GetFloat(SaveData.Level5Time, float.MaxValue);
 
         // TEMP : set current level
-        switch(SceneManager.GetActiveScene().name)
+        switch (SceneManager.GetActiveScene().name)
         {
             case "MainMenu":
                 currentLevel = 0;
@@ -156,8 +178,21 @@ public class GameManager : MonoBehaviour
         victoryPanel = GameObject.FindWithTag("VictoryPanel");
         timer = GameObject.FindWithTag("Timer");
         victoryTimer = GameObject.FindWithTag("VictoryTimer");
+        victoryText = GameObject.FindWithTag("VictoryText");
+        bestTime1 = GameObject.Find("BestTime1");
+        bestTime2 = GameObject.Find("BestTime2");
+        bestTime3 = GameObject.Find("BestTime3");
+        bestTime4 = GameObject.Find("BestTime4");
+        bestTime5 = GameObject.Find("BestTime5");
+        LevelSelector = GameObject.FindWithTag("LevelSelectorPanel");
 
-        if (pausePanel == null || victoryPanel == null || timer == null || victoryTimer == null)
+        if (LevelSelector != null)
+        {
+            // Disable Level Selector on startup
+            LevelSelector.SetActive(false);
+        }
+
+        if (pausePanel == null || victoryPanel == null || timer == null || victoryTimer == null || victoryText == null)
         {
             // Only show an error if we are in a game scene where these panels are expected
             if (scene.name != "MainMenu")
@@ -173,49 +208,163 @@ public class GameManager : MonoBehaviour
             timer.SetActive(true);
             isPaused = false;
         }
+
+        // If in main menu, update best time displays
+        if (scene.name == "MainMenu")
+        {
+            Debug.Log("In Main Menu - Updating Best Times");
+            // Update best time displays
+            if (bestTime1 != null)
+            {
+                if (levelScore1 == float.MaxValue)
+                {
+                    bestTime1.GetComponent<TextMeshProUGUI>().text = "N/A";
+                }
+                else
+                {
+                    int minutes = Mathf.FloorToInt(levelScore1 / 60F);
+                    int seconds = Mathf.FloorToInt(levelScore1 - minutes * 60);
+                    int milliseconds = Mathf.FloorToInt((levelScore1 * 100) % 100);
+                    bestTime1.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+                }
+            }
+            else
+            {                 
+                Debug.Log("BestTime1 object not found in Main Menu");
+            }
+            if (bestTime2 != null)
+            {
+                if (levelScore2 == float.MaxValue)
+                {
+                    bestTime2.GetComponent<TextMeshProUGUI>().text = "N/A";
+                }
+                else
+                {
+                    int minutes = Mathf.FloorToInt(levelScore2 / 60F);
+                    int seconds = Mathf.FloorToInt(levelScore2 - minutes * 60);
+                    int milliseconds = Mathf.FloorToInt((levelScore2 * 100) % 100);
+                    bestTime2.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+                }
+            }
+            if (bestTime3 != null)
+            {
+                if (levelScore3 == float.MaxValue)
+                {
+                    bestTime3.GetComponent<TextMeshProUGUI>().text = "N/A";
+                }
+                else
+                {
+                    int minutes = Mathf.FloorToInt(levelScore3 / 60F);
+                    int seconds = Mathf.FloorToInt(levelScore3 - minutes * 60);
+                    int milliseconds = Mathf.FloorToInt((levelScore3 * 100) % 100);
+                    bestTime3.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+                }
+            }
+            if (bestTime4 != null)
+            {
+                if (levelScore4 == float.MaxValue)
+                {
+                    bestTime4.GetComponent<TextMeshProUGUI>().text = "N/A";
+                }
+                else
+                {
+                    int minutes = Mathf.FloorToInt(levelScore4 / 60F);
+                    int seconds = Mathf.FloorToInt(levelScore4 - minutes * 60);
+                    int milliseconds = Mathf.FloorToInt((levelScore4 * 100) % 100);
+                    bestTime4.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+                }
+            }
+            if (bestTime5 != null)
+            {
+                if (levelScore5 == float.MaxValue)
+                {
+                    bestTime5.GetComponent<TextMeshProUGUI>().text = "N/A";
+                }
+                else
+                {
+                    int minutes = Mathf.FloorToInt(levelScore5 / 60F);
+                    int seconds = Mathf.FloorToInt(levelScore5 - minutes * 60);
+                    int milliseconds = Mathf.FloorToInt((levelScore5 * 100) % 100);
+                    bestTime5.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+                }
+            }
+        }
     }
 
     // Victory function
     public void Victory()
     {
-        Debug.Log("Level Complete!");
+        if (!isVictory)
+        {
+            Debug.Log("Level Complete!");
 
-        // Save level score
-        switch (currentLevel)
-        {
-            case 1:
-                levelScore1 = levelTime;
-                break;
-            case 2:
-                levelScore2 = levelTime;
-                break;
-            case 3:
-                levelScore3 = levelTime;
-                break;
-            case 4:
-                levelScore4 = levelTime;
-                break;
-            case 5:
-                levelScore5 = levelTime;
-                break;
-            default:
-                Debug.Log("Error: Invalid Level Index");
-                break;
-        }
-        
-        // Show victory screen
-        victoryPanel.SetActive(true);
-        timer.SetActive(false); // Hide timer
-        isPaused = true;
-        isVictory = true;
-        Time.timeScale = 0; // Pause game time
-        // Update victory timer UI
-        if (victoryTimer != null)
-        {
-            int minutes = Mathf.FloorToInt(levelTime / 60F);
-            int seconds = Mathf.FloorToInt(levelTime - minutes * 60);
-            int milliseconds = Mathf.FloorToInt((levelTime * 100) % 100);
-            victoryTimer.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+            // Get the current best time for this level
+            float currentTime = levelTime;
+            string saveKey = SaveData.Prefix + currentLevel.ToString();
+            float bestTime = PlayerPrefs.GetFloat(saveKey, float.MaxValue);
+
+            // Check if current time beat the best time
+            if (currentTime < bestTime)
+            {
+                Debug.Log("New Best Time!");
+                // Save new best time
+                PlayerPrefs.SetFloat(saveKey, currentTime);
+                PlayerPrefs.Save();
+
+                // Update victory text
+                if (victoryText != null)
+                {
+                    victoryText.GetComponent<TextMeshProUGUI>().text = "New\nBest Time!";
+                }
+
+                // Save level score
+                switch (currentLevel)
+                {
+                    case 1:
+                        levelScore1 = levelTime;
+                        break;
+                    case 2:
+                        levelScore2 = levelTime;
+                        break;
+                    case 3:
+                        levelScore3 = levelTime;
+                        break;
+                    case 4:
+                        levelScore4 = levelTime;
+                        break;
+                    case 5:
+                        levelScore5 = levelTime;
+                        break;
+                    default:
+                        Debug.Log("Error: Invalid Level Index");
+                        break;
+                }
+            }
+            else
+            {
+                // Update victory text
+                if (victoryText != null)
+                {
+                    victoryText.GetComponent<TextMeshProUGUI>().text = "Level\nCompleted!";
+                }
+            }
+
+
+
+            // Show victory screen
+            victoryPanel.SetActive(true);
+            timer.SetActive(false); // Hide timer
+            isPaused = true;
+            isVictory = true;
+            Time.timeScale = 0; // Pause game time
+                                // Update victory timer UI
+            if (victoryTimer != null)
+            {
+                int minutes = Mathf.FloorToInt(levelTime / 60F);
+                int seconds = Mathf.FloorToInt(levelTime - minutes * 60);
+                int milliseconds = Mathf.FloorToInt((levelTime * 100) % 100);
+                victoryTimer.GetComponent<TextMeshProUGUI>().text = string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
+            }
         }
     }
 
