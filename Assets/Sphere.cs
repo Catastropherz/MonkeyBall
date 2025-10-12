@@ -52,4 +52,15 @@ public class NewBehaviourScript : MonoBehaviour
         MoveSphere();
         MoveCamera();
     }
+
+    // Collide with Goal object
+    private void OnTriggerEnter(Collider other)
+    {
+        // Check if collided with Goal
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            // Victory
+            GameManager.instance.Victory();
+        }
+    }
 }
