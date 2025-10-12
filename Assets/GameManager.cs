@@ -62,6 +62,12 @@ public class GameManager : MonoBehaviour
             case "Level3":
                 currentLevel = 3;
                 break;
+            case "Level4":
+                currentLevel = 4;
+                break;
+            case "Level5":
+                currentLevel = 5;
+                break;
             default:
                 currentLevel = 0;
                 break;
@@ -114,8 +120,17 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Loading Level 3");
                 SceneManager.LoadSceneAsync("Level3");
                 break;
+            case 4:
+                Debug.Log("Loading Level 4");
+                SceneManager.LoadSceneAsync("Level4");
+                break;
+            case 5:
+                Debug.Log("Loading Level 5");
+                SceneManager.LoadSceneAsync("Level5");
+                break;
             default:
-                Debug.Log("Loading Level " + levelIndex);
+                Debug.Log("Loading Main Menu");
+                SceneManager.LoadSceneAsync("MainMenu");
                 break;
         }
         
@@ -207,7 +222,15 @@ public class GameManager : MonoBehaviour
     // Load next level
     public void NextLevel()
     {
-        LoadLevel(currentLevel + 1);
+        int maxLevel = 5; // Set maximum level index
+        int nextLevel = currentLevel + 1;
+        if (nextLevel >= maxLevel)
+        {
+            // If on last level, go to main menu
+            LoadLevel(0);
+            return;
+        }
+        LoadLevel(nextLevel);
     }
 
     // Pause game
