@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public enum ControlMode
 { 
@@ -54,6 +56,10 @@ public class GameManager : MonoBehaviour
     private GameObject bestTime4;
     private GameObject bestTime5;
     private GameObject LevelSelector;
+    private GameObject joystickFixedButton;
+    private GameObject joystickDynamicButton;
+    private GameObject gyroscopeButton;
+    private GameObject resetGyroButton;
 
     //-----------------------------------------------------
     // Unity Methods
@@ -166,7 +172,7 @@ public class GameManager : MonoBehaviour
                 SceneManager.LoadSceneAsync("MainMenu");
                 break;
         }
-        
+
     }
 
     private void OnEnable()
@@ -197,6 +203,10 @@ public class GameManager : MonoBehaviour
         bestTime4 = GameObject.Find("BestTime4");
         bestTime5 = GameObject.Find("BestTime5");
         LevelSelector = GameObject.FindWithTag("LevelSelectorPanel");
+        joystickFixedButton = GameObject.Find("JoyStickFixed");
+        joystickDynamicButton = GameObject.Find("JoyStickDynamic");
+        gyroscopeButton = GameObject.Find("Gyro");
+        resetGyroButton = GameObject.Find("Reset Gyro");
 
         if (LevelSelector != null)
         {
@@ -220,9 +230,10 @@ public class GameManager : MonoBehaviour
             timer.SetActive(true);
             isPaused = false;
 
-            if(controlMode == ControlMode.JOYSTICK_FIXED && joystick != null)
+            if (controlMode == ControlMode.JOYSTICK_FIXED && joystick != null)
             {
                 joystick.SetActive(true);
+                joystick.transform.position = new Vector3(540, 300, 0); // Fixed position
             }
             else if (joystick != null)
             {
@@ -232,7 +243,7 @@ public class GameManager : MonoBehaviour
 
         // If in main menu, update best time displays
         if (scene.name == "MainMenu")
-        {   
+        {
             Debug.Log("In Main Menu - Updating Best Times");
             // Update best time displays
             if (bestTime1 != null)
@@ -250,7 +261,7 @@ public class GameManager : MonoBehaviour
                 }
             }
             else
-            {                 
+            {
                 Debug.Log("BestTime1 object not found in Main Menu");
             }
             if (bestTime2 != null)
@@ -456,4 +467,42 @@ public class GameManager : MonoBehaviour
     {
         LoadLevel(0);
     }
+
+    // Change Control Mode function
+    public void ChangeControlMode(int mode)
+    {
+        controlMode = (ControlMode)mode;
+        Debug.Log("Control Mode changed to: " + controlMode.ToString());
+        if (joystick != null)
+        {
+            if (controlMode == ControlMode.JOYSTICK_FIXED)
+            {
+                joystick.SetActive(true);
+                joystick.transform.position = new Vector3(540, 300, 0); // Fixed position
+            }
+            else
+            {
+                joystick.SetActive(false);
+            }
+        }
+        if (resetGyroButton != null)
+        {
+            if (controlMode == ControlMode.GYROSCOPE)
+            {
+                // TODO : Gyro controls
+                resetGyroButton.SetActive(true);
+            }
+        }
+    }
+
+    // Reset Gyroscope function
+    public void ResetGyroscope()
+    {
+        //TODO : Gyro controls
+    }
+
+    // Get current control mode
+    public ControlMode GetControlMode() { return controlMode; }
+
 }
+
