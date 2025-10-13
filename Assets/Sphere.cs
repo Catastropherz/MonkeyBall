@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class NewBehaviourScript : MonoBehaviour
 {
@@ -10,7 +11,9 @@ public class NewBehaviourScript : MonoBehaviour
     public GameObject cameraZ;
     public GameObject cameraObject;
 
-    private float moveSpeed = 250.0f;
+    [SerializeField] private InputActionReference moveAction;
+
+    private float moveSpeed = 280.0f;
     private float horizontalInput;
     private float verticalInput;
     private Vector3 moveDirection;
@@ -30,8 +33,11 @@ public class NewBehaviourScript : MonoBehaviour
     void MoveSphere()
     {
         // set input values
-        horizontalInput = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime;
-        verticalInput = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
+        //horizontalInput = Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime;
+        //verticalInput = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
+        Vector2 inputVector = moveAction.action.ReadValue<Vector2>();
+        horizontalInput = inputVector.x * moveSpeed * Time.deltaTime;
+        verticalInput = inputVector.y * moveSpeed * Time.deltaTime;
         moveDirection = (cameraX.transform.forward * verticalInput) + (cameraY.transform.right * horizontalInput);
 
         // add force to sphere
@@ -43,8 +49,11 @@ public class NewBehaviourScript : MonoBehaviour
     void MoveCamera()
     {
         // set input values
-        float horizontalTilt = Input.GetAxis("Horizontal") * maxHorizontalAngle;
-        float verticalTilt = Input.GetAxis("Vertical") * maxVerticalAngle * -1;
+        //float horizontalTilt = Input.GetAxis("Horizontal") * maxHorizontalAngle;
+        //float verticalTilt = Input.GetAxis("Vertical") * maxVerticalAngle * -1;
+        Vector2 inputVector = moveAction.action.ReadValue<Vector2>();
+        float horizontalTilt = inputVector.x * maxHorizontalAngle;
+        float verticalTilt = inputVector.y * maxVerticalAngle * -1;
 
 
         // rotate camera

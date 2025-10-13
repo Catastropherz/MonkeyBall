@@ -9,7 +9,9 @@ TagManager:
   - Timer
   - VictoryTimer
   - VictoryText
+  - LevelSelectorPanel
   - BestTime1
+  - JoyStick
   layers:
   - Default
   - TransparentFX

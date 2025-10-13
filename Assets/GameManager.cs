@@ -2,7 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+
+public enum ControlMode
+{ 
+    JOYSTICK_FIXED,
+    JOYSTICK_DYNAMIC,
+    GYROSCOPE,
+}
 
 // Save best times for each level
 public static class SaveData
@@ -31,7 +39,10 @@ public class GameManager : MonoBehaviour
     private bool isPaused = false;
     private bool isVictory = false;
 
+    public ControlMode controlMode = ControlMode.JOYSTICK_FIXED;
+
     // Panel references
+    private GameObject joystick;
     private GameObject pausePanel;
     private GameObject victoryPanel;
     private GameObject timer;
@@ -174,6 +185,7 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // references to UI objects in the newly loaded scene
+        joystick = GameObject.FindWithTag("JoyStick");
         pausePanel = GameObject.FindWithTag("PausePanel");
         victoryPanel = GameObject.FindWithTag("VictoryPanel");
         timer = GameObject.FindWithTag("Timer");
@@ -207,11 +219,20 @@ public class GameManager : MonoBehaviour
             victoryPanel.SetActive(false);
             timer.SetActive(true);
             isPaused = false;
+
+            if(controlMode == ControlMode.JOYSTICK_FIXED && joystick != null)
+            {
+                joystick.SetActive(true);
+            }
+            else if (joystick != null)
+            {
+                joystick.SetActive(false);
+            }
         }
 
         // If in main menu, update best time displays
         if (scene.name == "MainMenu")
-        {
+        {   
             Debug.Log("In Main Menu - Updating Best Times");
             // Update best time displays
             if (bestTime1 != null)
@@ -357,7 +378,12 @@ public class GameManager : MonoBehaviour
             isPaused = true;
             isVictory = true;
             Time.timeScale = 0; // Pause game time
-                                // Update victory timer UI
+            // Deactivate joystick if in fixed mode
+            if (joystick != null && controlMode == ControlMode.JOYSTICK_FIXED)
+            {
+                joystick.SetActive(false);
+            }
+            // Update victory timer UI
             if (victoryTimer != null)
             {
                 int minutes = Mathf.FloorToInt(levelTime / 60F);
@@ -373,7 +399,7 @@ public class GameManager : MonoBehaviour
     {
         int maxLevel = 5; // Set maximum level index
         int nextLevel = currentLevel + 1;
-        if (nextLevel >= maxLevel)
+        if (nextLevel > maxLevel)
         {
             // If on last level, go to main menu
             LoadLevel(0);
@@ -390,6 +416,11 @@ public class GameManager : MonoBehaviour
             isPaused = true;
             Time.timeScale = 0f; // Freeze game time
             pausePanel.SetActive(true);
+            // Deactivate joystick if in fixed mode
+            if (joystick != null && controlMode == ControlMode.JOYSTICK_FIXED)
+            {
+                joystick.SetActive(false);
+            }
         }
         else if (isVictory)
         {
@@ -407,6 +438,11 @@ public class GameManager : MonoBehaviour
         isPaused = false;
         pausePanel.SetActive(false);
         Time.timeScale = 1f; // Resume game time
+        // Reactivate joystick if in fixed mode
+        if (joystick != null && controlMode == ControlMode.JOYSTICK_FIXED)
+        {
+            joystick.SetActive(true);
+        }
     }
 
     // Restart level
