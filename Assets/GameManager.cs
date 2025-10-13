@@ -25,6 +25,7 @@ public static class SaveData
     public const string Level5Time = Prefix + "5";
 }
 
+// Manages game state, level loading, UI panels
 public class GameManager : MonoBehaviour
 {
     // Singleton instance
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
 
     public ControlMode controlMode = ControlMode.JOYSTICK_FIXED;
 
-    // Panel references
+    // References
     private GameObject joystick;
     private GameObject pausePanel;
     private GameObject victoryPanel;
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour
     private GameObject joystickDynamicButton;
     private GameObject gyroscopeButton;
     private GameObject resetGyroButton;
+    private NewBehaviourScript playerSphere;
 
     //-----------------------------------------------------
     // Unity Methods
@@ -111,6 +113,12 @@ public class GameManager : MonoBehaviour
                 currentLevel = 0;
                 break;
         }
+    }
+
+    void Start()
+    { 
+        // Set frame rate
+        Application.targetFrameRate = 60;
     }
 
     // Update is called once per frame
@@ -207,6 +215,10 @@ public class GameManager : MonoBehaviour
         joystickDynamicButton = GameObject.Find("JoyStickDynamic");
         gyroscopeButton = GameObject.Find("Gyro");
         resetGyroButton = GameObject.Find("Reset Gyro");
+
+        GameObject playerSphereObject = GameObject.FindWithTag("Player");
+        if (playerSphereObject != null) playerSphere = playerSphereObject.GetComponent<NewBehaviourScript>();
+        else playerSphere = null;
 
         if (LevelSelector != null)
         {
@@ -489,7 +501,6 @@ public class GameManager : MonoBehaviour
         {
             if (controlMode == ControlMode.GYROSCOPE)
             {
-                // TODO : Gyro controls
                 resetGyroButton.SetActive(true);
             }
         }
@@ -498,7 +509,10 @@ public class GameManager : MonoBehaviour
     // Reset Gyroscope function
     public void ResetGyroscope()
     {
-        //TODO : Gyro controls
+        if (playerSphere != null)
+        {
+            playerSphere.ResetGyroscope();
+        }
     }
 
     // Get current control mode

@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.OnScreen;
 
+// Handle floating joystick area interactions and pass events to the joystick
 namespace Assets.Scripts.Controller.Ui
 {
     public class FloatingStickAreaController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler

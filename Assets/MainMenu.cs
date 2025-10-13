@@ -5,66 +5,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.OnScreen;
 
-public class MainMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHandler, IDragHandler
+// Handle UI interactions and call GameManager functions
+public class MainMenu : MonoBehaviour
 {
-    //// Panel references
-    //private GameObject joystick;
-
-    //OnScreenStick _screenStick;
-    //RectTransform _mainRect;
-    //RectTransform _joystickRect;
-
-    //private void Start()
-    //{
-    //    // references to UI objects in the newly loaded scene
-    //    joystick = GameObject.FindWithTag("JoyStick");
-
-    //    if (joystick != null)
-    //    {
-    //        _screenStick = joystick.GetComponentInChildren<OnScreenStick>();
-    //        _mainRect = GetComponent<RectTransform>();
-    //        _joystickRect = joystick.GetComponent<RectTransform>();
-    //        // Hide joystick for dynamic mode
-    //        if (GameManager.instance != null && GameManager.instance.GetControlMode() == ControlMode.JOYSTICK_DYNAMIC)
-    //        {
-    //            joystick.SetActive(false);
-    //        }
-    //    }
-    //}
-
-    //// Dynamic Joystick
-    //public void OnPointerDown(PointerEventData eventData)
-    //{
-    //    if (GameManager.instance == null || GameManager.instance.GetControlMode() != ControlMode.JOYSTICK_DYNAMIC || joystick == null)
-    //    {
-    //        return;
-    //    }
-    //    // Move joystick to touch position
-    //    Vector2 localPosition;
-
-    //    RectTransformUtility.ScreenPointToLocalPointInRectangle(_mainRect, eventData.pressPosition, Camera.main, out localPosition);
-
-    //    _joystickRect.localPosition = localPosition;
-
-    //    ExecuteEvents.pointerDownHandler(joystick.GetComponentInChildren<OnScreenStick>(), eventData);
-    //}
-    //public void OnDrag(PointerEventData eventData)
-    //{
-    //    if (GameManager.instance == null || GameManager.instance.GetControlMode() != ControlMode.JOYSTICK_DYNAMIC || joystick == null)
-    //    {
-    //        return;
-    //    }
-    //    ExecuteEvents.dragHandler(_screenStick, eventData);
-    //}
-    //public void OnPointerUp(PointerEventData eventData)
-    //{
-    //    if (GameManager.instance == null || GameManager.instance.GetControlMode() != ControlMode.JOYSTICK_DYNAMIC || joystick == null)
-    //    {
-    //        return;
-    //    }
-    //    ExecuteEvents.pointerUpHandler(_screenStick, eventData);
-    //}
-
     public void PlayGame()
     {
         GameManager.instance.LoadLevel(1);
@@ -148,6 +91,7 @@ public class MainMenu : MonoBehaviour//, IPointerDownHandler, IPointerUpHandler,
         GameManager.instance.ChangeControlMode(2);
     }
 
+    // Reset gyroscope
     public void ResetGyroscope()
     {
         GameManager.instance.ResetGyroscope();
