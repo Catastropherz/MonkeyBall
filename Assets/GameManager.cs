@@ -807,6 +807,7 @@ public class GameManager : MonoBehaviour
                         achievement1 = true;
                         SaveAchievements();
                         NotificationManager.instance.ScheduleAchievementNotification();
+                        Debug.Log("A new achievement has been unlocked!");
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -817,6 +818,7 @@ public class GameManager : MonoBehaviour
                         achievement2 = true;
                         SaveAchievements();
                         NotificationManager.instance.ScheduleAchievementNotification();
+                        Debug.Log("A new achievement has been unlocked!");
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -827,6 +829,7 @@ public class GameManager : MonoBehaviour
                         achievement3 = true;
                         SaveAchievements();
                         NotificationManager.instance.ScheduleAchievementNotification();
+                        Debug.Log("A new achievement has been unlocked!");
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -837,6 +840,7 @@ public class GameManager : MonoBehaviour
                         achievement4 = true;
                         SaveAchievements();
                         NotificationManager.instance.ScheduleAchievementNotification();
+                        Debug.Log("A new achievement has been unlocked!");
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -847,6 +851,7 @@ public class GameManager : MonoBehaviour
                         achievement5 = true;
                         SaveAchievements();
                         NotificationManager.instance.ScheduleAchievementNotification();
+                        Debug.Log("A new achievement has been unlocked!");
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
