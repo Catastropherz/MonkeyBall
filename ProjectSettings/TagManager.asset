@@ -12,6 +12,7 @@ TagManager:
   - LevelSelectorPanel
   - BestTime1
   - JoyStick
+  - ShopPanel
   layers:
   - Default
   - TransparentFX

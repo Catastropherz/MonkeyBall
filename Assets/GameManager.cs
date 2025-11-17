@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
     private GameObject bestTime4;
     private GameObject bestTime5;
     private GameObject LevelSelector;
+    private GameObject Shop;
     private GameObject joystickFixedButton;
     private GameObject joystickDynamicButton;
     private GameObject gyroscopeButton;
@@ -73,10 +74,11 @@ public class GameManager : MonoBehaviour
     RewardedAd m_rewardedAd;
 
     //test id
-    string m_adUnitID = "ca-app-pub-3940256099942544/1033173712";
+    string m_interstitialAdUnitID = "ca-app-pub-3940256099942544/1033173712";
     string m_bannerAdUnitID = "ca-app-pub-3940256099942544/6300978111";
     string m_rewardedAdUnitID = "ca-app-pub-3940256099942544/5224354917";
-
+    // Variable to track which level to load after the rewarded ad
+    private int rewardedAdNextLevelIndex = 0;
 
     //-----------------------------------------------------
     // Unity Methods
@@ -150,62 +152,64 @@ public class GameManager : MonoBehaviour
             m_interstitialAd = null;
         }
         print ("Creating interstitial ad.");
-        var adRequest = new AdRequest();
-        InterstitialAd.Load(m_adUnitID, adRequest,
-            (InterstitialAd ad, LoadAdError error) =>
-            {
-                // if error is not null, the load request failed.
-                if (error != null || ad == null)
-                {
-                    // ad failed
-                    print("Interstitial ad failed to load an ad " + "with error : " + error);
-                    return;
-                }
-                // ad laoded
-                print("Interstitial ad loaded with response : " + ad.GetResponseInfo());
-                m_interstitialAd = ad;
-            });
+        MobileAds.Initialize(m_initStatus => {
+            print("Google Mobile Ads initialized.");
 
-        // Show ad
-        if (m_interstitialAd != null && m_interstitialAd.CanShowAd())
-        {
-            Debug.Log("Showing AD");
-            m_interstitialAd.Show();
-        }
-        else 
-        {
-            Debug.Log("Ad not ready yet");
-        }
+            // Start loading the first interstitial and rewarded ads immediately after initialization
+            LoadInterstitialAd();
+            LoadRewardedAd();
+        });
 
         // Load Banner Ad
         LoadBannerAd();
     }
 
+    public void EnterShop()
+    {
+        ShowInterstitialAd();
+    }
+
     // Load Interstitial Ad
-    void LoadAd()
+    void LoadInterstitialAd()
     {
         if (m_interstitialAd != null)
         {
             m_interstitialAd.Destroy();
             m_interstitialAd = null;
         }
-        print("Loading another interstitial ad.");
+        print("Loading interstitial ad...");
         var adRequest = new AdRequest();
-        InterstitialAd.Load(m_adUnitID, adRequest,
-            (InterstitialAd ad, LoadAdError error) =>
-            {
-                // if error is not null, the load request failed.
-                if (error != null || ad == null)
-                {
-                    // ad failed
-                    print("Interstitial ad failed to load an ad " + "with error : " + error);
-                    return;
-                }
-                // ad laoded
-                print("Interstitial ad loaded with response : " + ad.GetResponseInfo());
-                m_interstitialAd = ad;
-                AdEventHandlers(m_interstitialAd);
-            });
+        InterstitialAd.Load(m_interstitialAdUnitID, adRequest,
+          (InterstitialAd ad, LoadAdError error) =>
+          {
+              // if error is not null, the load request failed.
+              if (error != null || ad == null)
+              {
+                  // ad failed
+                  print("Interstitial ad failed to load with error: " + error);
+                  return;
+              }
+              // ad loaded
+              print("Interstitial ad loaded with response: " + ad.GetResponseInfo());
+              m_interstitialAd = ad;
+              AdEventHandlers(m_interstitialAd);
+          });
+    }
+
+    // Show Interstitial Ad
+    public void ShowInterstitialAd()
+    {
+        if (m_interstitialAd != null && m_interstitialAd.CanShowAd())
+        {
+            Debug.Log("Showing Interstitial AD");
+            m_interstitialAd.Show();
+        }
+        else
+        {
+            Debug.Log("Interstitial ad not loaded yet.");
+            // If the ad isn't ready, try to load a new one for the next time
+            LoadInterstitialAd();
+        }
     }
 
     // Load Banner Ad
@@ -225,72 +229,113 @@ public class GameManager : MonoBehaviour
     }
 
     // Load Rewarded Ad
-    public void LoadRewardedAd(int _levelIndex)
+    public void LoadRewardedAd()
     {
-        if (m_rewardedAd != null)
+        if (m_rewardedAd != null)
         {
             m_rewardedAd.Destroy();
             m_rewardedAd = null;
         }
-        print("Loading rewarded ad.");
+        print("Loading rewarded ad...");
         var adRequest = new AdRequest();
         RewardedAd.Load(m_rewardedAdUnitID, adRequest,
-            (RewardedAd ad, LoadAdError error) =>
-            {
-                // if error is not null, the load request failed.
-                if (error != null || ad == null)
-                {
-                    // ad failed
-                    print("Rewarded ad failed to load an ad " + "with error : " + error);
-                    return;
-                }
-                // ad laoded
-                print("Rewarded ad loaded with response : " + ad.GetResponseInfo());
-                m_rewardedAd = ad;
-            });
+          (RewardedAd ad, LoadAdError error) =>
+          {
+              // if error is not null, the load request failed.
+              if (error != null || ad == null)
+              {
+                  // ad failed
+                  print("Rewarded ad failed to load with error: " + error);
+                  return;
+              }
+              // ad loaded
+              print("Rewarded ad loaded with response: " + ad.GetResponseInfo());
+              m_rewardedAd = ad;
+              AdEventHandlers(m_rewardedAd, rewardedAdNextLevelIndex);
+          });
+    }
 
-        // Show ad
+    // Show Rewarded Ad
+    public void ShowRewardedAd(int _levelIndex)
+    {
+        rewardedAdNextLevelIndex = _levelIndex;
+
         if (m_rewardedAd != null && m_rewardedAd.CanShowAd())
         {
             Debug.Log("Showing Rewarded AD");
             m_rewardedAd.Show((Reward _reward) =>
             {
-                Debug.Log("User earned reward");
-                LoadLevel(_levelIndex);
+                Debug.Log("User earned reward. Loading level: " + rewardedAdNextLevelIndex);
+                LoadLevel(rewardedAdNextLevelIndex);
             });
+        }
+        else
+        {
+            Debug.Log("Rewarded ad not loaded yet.");
+            LoadRewardedAd();
         }
     }
 
     // Ad handler
-    void AdEventHandlers(InterstitialAd _ad)
+    void AdEventHandlers(InterstitialAd _ad)
     {
-        // Called when the ad is shown.
-        _ad.OnAdClicked += () =>
+        // Called when the ad is shown.
+        _ad.OnAdClicked += () =>
         {
             Debug.Log("Interstitial ad clicked.");
         };
-        // Called when the ad is opened.
-        _ad.OnAdFullScreenContentOpened += () =>
+        // Called when the ad is opened.
+        _ad.OnAdFullScreenContentOpened += () =>
         {
             Debug.Log("Interstitial ad opened.");
         };
-        // Called when the ad is closed.
-        _ad.OnAdFullScreenContentClosed += () =>
+        // Called when the ad is closed.
+        _ad.OnAdFullScreenContentClosed += () =>
         {
             Debug.Log("Interstitial ad closed.");
 
-            // Reload the ad
-            LoadAd();
+            // Reload the ad for next time
+            LoadInterstitialAd();
         };
-        // Called when the ad is error.
-        _ad.OnAdFullScreenContentFailed += (AdError error) =>
+        // Called when the ad is error.
+        _ad.OnAdFullScreenContentFailed += (AdError error) =>
         {
             Debug.Log("Interstitial ad failed to open with error : " + error);
 
-            // Reload the ad
-            //LoadAd();
+            // Reload the ad for next time
+            LoadInterstitialAd();
         };
     }
+    void AdEventHandlers(RewardedAd _ad, int _levelIndex)
+    {
+        // Called when the ad is shown.
+        _ad.OnAdClicked += () =>
+        {
+            Debug.Log("Rewarded ad clicked.");
+        };
+        // Called when the ad is opened.
+        _ad.OnAdFullScreenContentOpened += () =>
+        {
+            Debug.Log("Rewarded ad opened.");
+        };
+        // Called when the ad is closed.
+        _ad.OnAdFullScreenContentClosed += () =>
+        {
+            Debug.Log("Rewarded ad closed.");
+
+            // Reload the ad for next time
+            LoadRewardedAd();
+        };
+        // Called when the ad is error.
+        _ad.OnAdFullScreenContentFailed += (AdError error) =>
+        {
+            Debug.Log("Rewarded ad failed to open with error : " + error);
+
+            // Reload the ad for next time
+            LoadRewardedAd();
+        };
+    }
+
 
     // Select Boy Skin
     public void SelectBoySkin()
@@ -448,6 +493,7 @@ public class GameManager : MonoBehaviour
         bestTime4 = GameObject.Find("BestTime4");
         bestTime5 = GameObject.Find("BestTime5");
         LevelSelector = GameObject.FindWithTag("LevelSelectorPanel");
+        Shop = GameObject.FindWithTag("ShopPanel");
         joystickFixedButton = GameObject.Find("JoyStickFixed");
         joystickDynamicButton = GameObject.Find("JoyStickDynamic");
         gyroscopeButton = GameObject.Find("Gyro");
@@ -461,6 +507,13 @@ public class GameManager : MonoBehaviour
         {
             // Disable Level Selector on startup
             LevelSelector.SetActive(false);
+        }
+
+        if (Shop != null)
+        {
+            // Disable Shop on startup
+            Shop.SetActive(false);
+
         }
 
         if (pausePanel == null || victoryPanel == null || timer == null || victoryTimer == null || victoryText == null)

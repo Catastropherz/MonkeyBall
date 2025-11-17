@@ -61,30 +61,35 @@ public class MainMenu : MonoBehaviour
     //Select level 2
     public void SelectLevel2()
     {
-        GameManager.instance.LoadRewardedAd(2);
+        GameManager.instance.ShowRewardedAd(2);
     }
 
     //Select level 3
     public void SelectLevel3()
     {
-        GameManager.instance.LoadRewardedAd(3);
+        GameManager.instance.ShowRewardedAd(3);
     }
 
     //Select level 4
     public void SelectLevel4()
     {
-        GameManager.instance.LoadRewardedAd(4);
+        GameManager.instance.ShowRewardedAd(4);
     }
 
     //Select Level 5
     public void SelectLevel5()
     {
-        GameManager.instance.LoadRewardedAd(5);
+        GameManager.instance.ShowRewardedAd(5);
     }
 
     //Select Shop
     public void SelectShop()
     {
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.EnterShop();
+        }
+
         if (GameManager.instance != null && GameManager.instance.IsGirlUnlocked())
         {
             //GirlText.GetComponent<TextMeshPro>().text = "Girl";
