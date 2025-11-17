@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using GoogleMobileAds.Api;
 
 public enum ControlMode
 { 
@@ -64,6 +65,13 @@ public class GameManager : MonoBehaviour
     private NewBehaviourScript playerSphere;
 
     //-----------------------------------------------------
+    // Ads
+    InterstitialAd m_interstitialAd;
+
+    //test id
+    string m_adUnitID = "ca-app-pub-3940256099942544/1033173712";
+
+    //-----------------------------------------------------
     // Unity Methods
 
     private void Awake()
@@ -119,6 +127,103 @@ public class GameManager : MonoBehaviour
     { 
         // Set frame rate
         Application.targetFrameRate = 60;
+        QualitySettings.vSyncCount = 0; // Disable vSync
+
+        MobileAds.Initialize(m_initStatus => {
+            print("google ads are initialized");
+        });
+
+        // Create an interstitial ad
+        if (m_interstitialAd != null)
+        {
+            m_interstitialAd.Destroy();
+            m_interstitialAd = null;
+        }
+        print ("Creating interstitial ad.");
+        var adRequest = new AdRequest();
+        InterstitialAd.Load(m_adUnitID, adRequest,
+            (InterstitialAd ad, LoadAdError error) =>
+            {
+                // if error is not null, the load request failed.
+                if (error != null || ad == null)
+                {
+                    // ad failed
+                    print("Interstitial ad failed to load an ad " + "with error : " + error);
+                    return;
+                }
+                // ad laoded
+                print("Interstitial ad loaded with response : " + ad.GetResponseInfo());
+                m_interstitialAd = ad;
+            });
+
+        // Show ad
+        if (m_interstitialAd != null && m_interstitialAd.CanShowAd())
+        {
+            Debug.Log("Showing AD");
+            m_interstitialAd.Show();
+        }
+        else 
+        {
+            Debug.Log("Ad not ready yet");
+        }
+    }
+
+    // Load Ad
+    void LoadAd()
+    {
+        if (m_interstitialAd != null)
+        {
+            m_interstitialAd.Destroy();
+            m_interstitialAd = null;
+        }
+        print("Loading another interstitial ad.");
+        var adRequest = new AdRequest();
+        InterstitialAd.Load(m_adUnitID, adRequest,
+            (InterstitialAd ad, LoadAdError error) =>
+            {
+                // if error is not null, the load request failed.
+                if (error != null || ad == null)
+                {
+                    // ad failed
+                    print("Interstitial ad failed to load an ad " + "with error : " + error);
+                    return;
+                }
+                // ad laoded
+                print("Interstitial ad loaded with response : " + ad.GetResponseInfo());
+                m_interstitialAd = ad;
+                AdEventHandlers(m_interstitialAd);
+            });
+    }
+
+    // Ad handler
+    void AdEventHandlers(InterstitialAd _ad)
+    {
+        // Called when the ad is shown.
+        _ad.OnAdClicked += () =>
+        {
+            Debug.Log("Interstitial ad clicked.");
+        };
+        // Called when the ad is opened.
+        _ad.OnAdFullScreenContentOpened += () =>
+        {
+            Debug.Log("Interstitial ad opened.");
+        };
+        // Called when the ad is closed.
+        _ad.OnAdFullScreenContentClosed += () =>
+        {
+            Debug.Log("Interstitial ad closed.");
+
+            // Reload the ad
+            LoadAd();
+        };
+        // Called when the ad is error.
+        _ad.OnAdFullScreenContentFailed += (AdError error) =>
+        {
+            Debug.Log("Interstitial ad failed to open with error : " + error);
+
+            // Reload the ad
+            //LoadAd();
+        };
     }
 
     // Update is called once per frame
@@ -517,6 +622,17 @@ public class GameManager : MonoBehaviour
 
     // Get current control mode
     public ControlMode GetControlMode() { return controlMode; }
+
+    // On Destroy
+    private void OnDestroy()
+    {
+        // Clean up ad
+        if (m_interstitialAd != null)
+        {
+            m_interstitialAd.Destroy();
+            m_interstitialAd = null;
+        }
+    }
 
 }
 

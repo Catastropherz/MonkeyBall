@@ -118,6 +118,15 @@ public class NewBehaviourScript : MonoBehaviour
     void Update()
     {
         MoveCamera();
+
+        // Respawn if fallen off
+        if (transform.position.y < -25.0f)
+        {
+            Debug.Log("Respawning...");
+            transform.position = respawnPosition;
+            sphere.velocity = Vector3.zero;
+            sphere.angularVelocity = Vector3.zero;
+        }
     }
 
     // FixedUpdate is called independent of frame rate
