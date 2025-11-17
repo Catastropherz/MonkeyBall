@@ -806,6 +806,7 @@ public class GameManager : MonoBehaviour
                         achievementAnnounce.SetActive(true);
                         achievement1 = true;
                         SaveAchievements();
+                        NotificationManager.instance.ScheduleAchievementNotification();
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -815,6 +816,7 @@ public class GameManager : MonoBehaviour
                         achievementAnnounce.SetActive(true);
                         achievement2 = true;
                         SaveAchievements();
+                        NotificationManager.instance.ScheduleAchievementNotification();
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -824,6 +826,7 @@ public class GameManager : MonoBehaviour
                         achievementAnnounce.SetActive(true);
                         achievement3 = true;
                         SaveAchievements();
+                        NotificationManager.instance.ScheduleAchievementNotification();
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -833,6 +836,7 @@ public class GameManager : MonoBehaviour
                         achievementAnnounce.SetActive(true);
                         achievement4 = true;
                         SaveAchievements();
+                        NotificationManager.instance.ScheduleAchievementNotification();
                     }
                     else achievementAnnounce.SetActive(false);
                     break;
@@ -842,6 +846,7 @@ public class GameManager : MonoBehaviour
                         achievementAnnounce.SetActive(true);
                         achievement5 = true;
                         SaveAchievements();
+                        NotificationManager.instance.ScheduleAchievementNotification();
                     }
                     else achievementAnnounce.SetActive(false);
                     break;

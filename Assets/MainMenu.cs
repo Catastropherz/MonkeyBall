@@ -12,11 +12,6 @@ public class MainMenu : MonoBehaviour
     //public GameObject GirlText;
     public TextMeshProUGUI GirlTextMesh;
 
-    void Start()
-    {
-        
-    }
-
     public void PlayGame()
     {
         GameManager.instance.LoadLevel(1);
