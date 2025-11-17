@@ -44,6 +44,11 @@ public class GameManager : MonoBehaviour
     private bool isVictory = false;
     private bool isGirlSkin = false;
     private bool isGirlUnlocked = true;
+    private bool achievement1 = false;
+    private bool achievement2 = false;
+    private bool achievement3 = false;
+    private bool achievement4 = false;
+    private bool achievement5 = false;
 
     public ControlMode controlMode = ControlMode.JOYSTICK_FIXED;
 
@@ -61,6 +66,14 @@ public class GameManager : MonoBehaviour
     private GameObject bestTime5;
     private GameObject LevelSelector;
     private GameObject Shop;
+    private GameObject AchievementPanel;
+    private GameObject lock1;
+    private GameObject lock2;
+    private GameObject lock3;
+    private GameObject lock4;
+    private GameObject lock5;
+    private GameObject achievementAnnounce;
+    private GameObject leaderboardAnnounce;
     private GameObject joystickFixedButton;
     private GameObject joystickDynamicButton;
     private GameObject gyroscopeButton;
@@ -107,6 +120,9 @@ public class GameManager : MonoBehaviour
 
         // Load skin settings
         LoadSkinSettings();
+
+        // Load achievements
+        LoadAchievements();
 
         // TEMP : set current level
         switch (SceneManager.GetActiveScene().name)
@@ -162,11 +178,6 @@ public class GameManager : MonoBehaviour
 
         // Load Banner Ad
         LoadBannerAd();
-    }
-
-    public void EnterShop()
-    {
-        ShowInterstitialAd();
     }
 
     // Load Interstitial Ad
@@ -399,6 +410,52 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Skin settings loaded: isGirlSkin = {isGirlSkin}, isGirlUnlocked = {isGirlUnlocked}");
     }
 
+    public void SetAchievement(int achievementIndex, bool status)
+    {
+        switch (achievementIndex)
+        {
+            case 1:
+                achievement1 = status;
+                break;
+            case 2:
+                achievement2 = status;
+                break;
+            case 3:
+                achievement3 = status;
+                break;
+            case 4:
+                achievement4 = status;
+                break;
+            case 5:
+                achievement5 = status;
+                break;
+            default:
+                Debug.Log("Invalid achievement index");
+                break;
+        }
+    }
+
+    public void SaveAchievements()
+    {
+        PlayerPrefs.SetInt("Achievement1", achievement1 ? 1 : 0);
+        PlayerPrefs.SetInt("Achievement2", achievement2 ? 1 : 0);
+        PlayerPrefs.SetInt("Achievement3", achievement3 ? 1 : 0);
+        PlayerPrefs.SetInt("Achievement4", achievement4 ? 1 : 0);
+        PlayerPrefs.SetInt("Achievement5", achievement5 ? 1 : 0);
+        PlayerPrefs.Save();
+        Debug.Log("Achievements saved.");
+    }
+
+    public void LoadAchievements()
+    {
+        achievement1 = PlayerPrefs.GetInt("Achievement1", 0) == 1;
+        achievement2 = PlayerPrefs.GetInt("Achievement2", 0) == 1;
+        achievement3 = PlayerPrefs.GetInt("Achievement3", 0) == 1;
+        achievement4 = PlayerPrefs.GetInt("Achievement4", 0) == 1;
+        achievement5 = PlayerPrefs.GetInt("Achievement5", 0) == 1;
+        Debug.Log("Achievements loaded.");
+    }
+
 
     // -----------------------------------------------------
 
@@ -494,6 +551,14 @@ public class GameManager : MonoBehaviour
         bestTime5 = GameObject.Find("BestTime5");
         LevelSelector = GameObject.FindWithTag("LevelSelectorPanel");
         Shop = GameObject.FindWithTag("ShopPanel");
+        AchievementPanel = GameObject.FindWithTag("AchievementPanel");
+        achievementAnnounce = GameObject.FindWithTag("AchievementAnnounce");
+        leaderboardAnnounce = GameObject.FindWithTag("LeaderboardAnnounce");
+        lock1 = GameObject.Find("Lock_1");
+        lock2 = GameObject.Find("Lock_2");
+        lock3 = GameObject.Find("Lock_3");
+        lock4 = GameObject.Find("Lock_4");
+        lock5 = GameObject.Find("Lock_5");
         joystickFixedButton = GameObject.Find("JoyStickFixed");
         joystickDynamicButton = GameObject.Find("JoyStickDynamic");
         gyroscopeButton = GameObject.Find("Gyro");
@@ -514,6 +579,12 @@ public class GameManager : MonoBehaviour
             // Disable Shop on startup
             Shop.SetActive(false);
 
+        }
+
+        if (AchievementPanel != null)
+        {
+            // Disable Achievement Panel on startup
+            AchievementPanel.SetActive(false);
         }
 
         if (pausePanel == null || victoryPanel == null || timer == null || victoryTimer == null || victoryText == null)
@@ -628,9 +699,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void EnterShop()
+    {
+        ShowInterstitialAd();
+    }
+
+    public void EnterAchievementPanel()
+    {
+        AchievementPanel.SetActive(true);
+
+        // Check achievements and update locks
+        if (achievement1) lock1.SetActive(false);
+        else lock1.SetActive(true);
+
+        if (achievement2) lock2.SetActive(false);
+        else lock2.SetActive(true);
+
+        if (achievement3) lock3.SetActive(false);
+        else lock3.SetActive(true);
+
+        if (achievement4) lock4.SetActive(false);
+        else lock4.SetActive(true);
+
+        if (achievement5) lock5.SetActive(false);
+        else lock5.SetActive(true);
+    }
+
     // Victory function
     public void Victory()
     {
+        bool isNewBestTime = false;
+
         if (!isVictory)
         {
             Debug.Log("Level Complete!");
@@ -643,6 +742,7 @@ public class GameManager : MonoBehaviour
             // Check if current time beat the best time
             if (currentTime < bestTime)
             {
+                isNewBestTime = true;
                 Debug.Log("New Best Time!");
                 // Save new best time
                 PlayerPrefs.SetFloat(saveKey, currentTime);
@@ -694,6 +794,62 @@ public class GameManager : MonoBehaviour
             isPaused = true;
             isVictory = true;
             Time.timeScale = 0; // Pause game time
+            // Show leaderboard announcement
+            leaderboardAnnounce.SetActive(isNewBestTime);
+
+            // Achievement
+            switch (currentLevel)
+            {
+                case 1:
+                    if (!achievement1)
+                    { 
+                        achievementAnnounce.SetActive(true);
+                        achievement1 = true;
+                        SaveAchievements();
+                    }
+                    else achievementAnnounce.SetActive(false);
+                    break;
+                case 2:
+                    if (!achievement2)
+                    {
+                        achievementAnnounce.SetActive(true);
+                        achievement2 = true;
+                        SaveAchievements();
+                    }
+                    else achievementAnnounce.SetActive(false);
+                    break;
+                case 3:
+                    if (!achievement3)
+                    {
+                        achievementAnnounce.SetActive(true);
+                        achievement3 = true;
+                        SaveAchievements();
+                    }
+                    else achievementAnnounce.SetActive(false);
+                    break;
+                case 4:
+                    if (!achievement4)
+                    {
+                        achievementAnnounce.SetActive(true);
+                        achievement4 = true;
+                        SaveAchievements();
+                    }
+                    else achievementAnnounce.SetActive(false);
+                    break;
+                case 5:
+                    if (!achievement5)
+                    {
+                        achievementAnnounce.SetActive(true);
+                        achievement5 = true;
+                        SaveAchievements();
+                    }
+                    else achievementAnnounce.SetActive(false);
+                    break;
+                default:
+                    Debug.Log("Error: Invalid Level Index");
+                    break;
+            }
+
             // Deactivate joystick if in fixed mode
             if (joystick != null && controlMode == ControlMode.JOYSTICK_FIXED)
             {

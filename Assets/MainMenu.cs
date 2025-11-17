@@ -109,6 +109,11 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    public void SelectAchievementPanel()
+    {
+        GameManager.instance.EnterAchievementPanel();
+    }
+
     public void SelectGirlSkin()
     {
         GameManager.instance.SelectGirlSkin();

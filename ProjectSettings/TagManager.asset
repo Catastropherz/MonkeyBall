@@ -13,6 +13,9 @@ TagManager:
   - BestTime1
   - JoyStick
   - ShopPanel
+  - AchievementPanel
+  - LeaderboardAnnounce
+  - AchievementAnnounce
   layers:
   - Default
   - TransparentFX
