@@ -24,13 +24,33 @@ public class NewBehaviourScript : MonoBehaviour
 
     private Vector3 respawnPosition;
 
+    // Skins
+    public GameObject maleCharacterPrefab;
+    public GameObject femaleCharacterPrefab;
+    private GameObject instantiatedCharacter;
+
     void Start()
-    { 
+    {
         // Enable gyroscope
         Input.gyro.enabled = true;
 
         // Save respawn position
         respawnPosition = transform.position;
+
+        // Check for skin
+        if (GameManager.instance != null)
+        {
+            if (GameManager.instance.IsGirlSkin())
+            {
+                maleCharacterPrefab.SetActive(false);
+                femaleCharacterPrefab.SetActive(true);
+            }
+            else if (!GameManager.instance.IsGirlSkin())
+            { 
+                maleCharacterPrefab.SetActive(true);
+                femaleCharacterPrefab.SetActive(false);
+            }
+        }
     }
     
     // Movement function

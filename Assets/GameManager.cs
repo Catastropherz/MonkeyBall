@@ -42,6 +42,8 @@ public class GameManager : MonoBehaviour
     private float levelScore5 = float.MaxValue;
     private bool isPaused = false;
     private bool isVictory = false;
+    private bool isGirlSkin = false;
+    private bool isGirlUnlocked = true;
 
     public ControlMode controlMode = ControlMode.JOYSTICK_FIXED;
 
@@ -67,9 +69,14 @@ public class GameManager : MonoBehaviour
     //-----------------------------------------------------
     // Ads
     InterstitialAd m_interstitialAd;
+    BannerView m_bannerView;
+    RewardedAd m_rewardedAd;
 
     //test id
     string m_adUnitID = "ca-app-pub-3940256099942544/1033173712";
+    string m_bannerAdUnitID = "ca-app-pub-3940256099942544/6300978111";
+    string m_rewardedAdUnitID = "ca-app-pub-3940256099942544/5224354917";
+
 
     //-----------------------------------------------------
     // Unity Methods
@@ -95,6 +102,9 @@ public class GameManager : MonoBehaviour
         levelScore3 = PlayerPrefs.GetFloat(SaveData.Level3Time, float.MaxValue);
         levelScore4 = PlayerPrefs.GetFloat(SaveData.Level4Time, float.MaxValue);
         levelScore5 = PlayerPrefs.GetFloat(SaveData.Level5Time, float.MaxValue);
+
+        // Load skin settings
+        LoadSkinSettings();
 
         // TEMP : set current level
         switch (SceneManager.GetActiveScene().name)
@@ -166,9 +176,12 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Ad not ready yet");
         }
+
+        // Load Banner Ad
+        LoadBannerAd();
     }
 
-    // Load Ad
+    // Load Interstitial Ad
     void LoadAd()
     {
         if (m_interstitialAd != null)
@@ -193,6 +206,59 @@ public class GameManager : MonoBehaviour
                 m_interstitialAd = ad;
                 AdEventHandlers(m_interstitialAd);
             });
+    }
+
+    // Load Banner Ad
+    public void LoadBannerAd()
+    {
+        // Create a 320x50 banner at bottom of the screen
+        if (m_bannerView != null)
+        {
+            m_bannerView.Destroy();
+            m_bannerView = null;
+        }
+        m_bannerView = new BannerView(m_bannerAdUnitID, AdSize.Banner, AdPosition.Bottom);
+        // Create an empty ad request
+        var request = new AdRequest();
+        // Load the banner with the request
+        m_bannerView.LoadAd(request);
+    }
+
+    // Load Rewarded Ad
+    public void LoadRewardedAd(int _levelIndex)
+    {
+        if (m_rewardedAd != null)
+        {
+            m_rewardedAd.Destroy();
+            m_rewardedAd = null;
+        }
+        print("Loading rewarded ad.");
+        var adRequest = new AdRequest();
+        RewardedAd.Load(m_rewardedAdUnitID, adRequest,
+            (RewardedAd ad, LoadAdError error) =>
+            {
+                // if error is not null, the load request failed.
+                if (error != null || ad == null)
+                {
+                    // ad failed
+                    print("Rewarded ad failed to load an ad " + "with error : " + error);
+                    return;
+                }
+                // ad laoded
+                print("Rewarded ad loaded with response : " + ad.GetResponseInfo());
+                m_rewardedAd = ad;
+            });
+
+        // Show ad
+        if (m_rewardedAd != null && m_rewardedAd.CanShowAd())
+        {
+            Debug.Log("Showing Rewarded AD");
+            m_rewardedAd.Show((Reward _reward) =>
+            {
+                Debug.Log("User earned reward");
+                LoadLevel(_levelIndex);
+            });
+        }
     }
 
     // Ad handler
@@ -225,6 +291,72 @@ public class GameManager : MonoBehaviour
             //LoadAd();
         };
     }
+
+    // Select Boy Skin
+    public void SelectBoySkin()
+    {
+        isGirlSkin = false;
+        SaveSkinSettings();
+        Debug.Log("Selected Boy skin");
+    }
+
+    // Select Girl Skin
+    public void SelectGirlSkin()
+    {
+        if (isGirlUnlocked)
+        {
+            isGirlSkin = true;
+            Debug.Log("Selected Girl skin");
+            SaveSkinSettings();
+        }
+        else
+        {
+            // TODO: Setup IAP
+            isGirlUnlocked = true;
+            isGirlSkin = true;
+            Debug.Log("Selected Girl skin");
+            SaveSkinSettings();
+        }
+    }
+
+    public bool IsGirlUnlocked()
+    {
+        return isGirlUnlocked;
+    }
+    public bool IsGirlSkin()
+    {
+        return isGirlSkin;
+    }
+    public void SaveSkinSettings()
+    {
+        // Save the skin preference
+        int girlSkinValue = isGirlSkin ? 1 : 0;
+        PlayerPrefs.SetInt("GirlSkin", girlSkinValue);
+
+        // Save the unlocked status
+        int girlUnlockedValue = isGirlUnlocked ? 1 : 0;
+        PlayerPrefs.SetInt("GirlUnlocked", girlUnlockedValue);
+
+        PlayerPrefs.Save();
+        Debug.Log("Skin settings saved.");
+    }
+
+    public void LoadSkinSettings()
+    {
+        // Load the skin preference
+        int savedSkinValue = PlayerPrefs.GetInt("GirlSkin", 0);
+        isGirlSkin = (savedSkinValue == 1);
+
+        // Load the unlocked status
+        int savedUnlockedValue = PlayerPrefs.GetInt("GirlUnlocked", 0);
+        isGirlUnlocked = (savedUnlockedValue == 1);
+
+        Debug.Log($"Skin settings loaded: isGirlSkin = {isGirlSkin}, isGirlUnlocked = {isGirlUnlocked}");
+    }
+
+
+    // -----------------------------------------------------
+
 
     // Update is called once per frame
     void Update()
@@ -361,6 +493,9 @@ public class GameManager : MonoBehaviour
         // If in main menu, update best time displays
         if (scene.name == "MainMenu")
         {
+            // Load banner ad
+            LoadBannerAd();
+
             Debug.Log("In Main Menu - Updating Best Times");
             // Update best time displays
             if (bestTime1 != null)
@@ -631,6 +766,16 @@ public class GameManager : MonoBehaviour
         {
             m_interstitialAd.Destroy();
             m_interstitialAd = null;
+        }
+        if (m_bannerView != null)
+        {
+            m_bannerView.Destroy();
+            m_bannerView = null;
+        }
+        if (m_rewardedAd != null)
+        {
+            m_rewardedAd.Destroy();
+            m_rewardedAd = null;
         }
     }
 

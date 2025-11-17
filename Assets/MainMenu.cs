@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -8,6 +9,14 @@ using UnityEngine.InputSystem.OnScreen;
 // Handle UI interactions and call GameManager functions
 public class MainMenu : MonoBehaviour
 {
+    //public GameObject GirlText;
+    public TextMeshProUGUI GirlTextMesh;
+
+    void Start()
+    {
+        
+    }
+
     public void PlayGame()
     {
         GameManager.instance.LoadLevel(1);
@@ -52,25 +61,57 @@ public class MainMenu : MonoBehaviour
     //Select level 2
     public void SelectLevel2()
     {
-        GameManager.instance.LoadLevel(2);
+        GameManager.instance.LoadRewardedAd(2);
     }
 
     //Select level 3
     public void SelectLevel3()
     {
-        GameManager.instance.LoadLevel(3);
+        GameManager.instance.LoadRewardedAd(3);
     }
 
     //Select level 4
     public void SelectLevel4()
     {
-        GameManager.instance.LoadLevel(4);
+        GameManager.instance.LoadRewardedAd(4);
     }
 
     //Select Level 5
     public void SelectLevel5()
     {
-        GameManager.instance.LoadLevel(5);
+        GameManager.instance.LoadRewardedAd(5);
+    }
+
+    //Select Shop
+    public void SelectShop()
+    {
+        if (GameManager.instance != null && GameManager.instance.IsGirlUnlocked())
+        {
+            //GirlText.GetComponent<TextMeshPro>().text = "Girl";
+            GirlTextMesh.text = "Girl";
+            // print debug message
+            Debug.Log("Girl unlocked.");
+        }
+        else if (GameManager.instance != null && !GameManager.instance.IsGirlUnlocked())
+        {
+            //GirlText.GetComponent<TextMeshPro>().text = "$0.99";
+            GirlTextMesh.text = "$0.99";
+            Debug.Log("Girl locked.");
+        }
+        else
+        {
+            Debug.LogError("GameManager instance is null.");
+        }
+    }
+
+    public void SelectGirlSkin()
+    {
+        GameManager.instance.SelectGirlSkin();
+    }
+
+    public void SelectBoySkin()
+    {
+        GameManager.instance.SelectBoySkin();
     }
 
     // Change control to joystick fixed
